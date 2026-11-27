@@ -1,7 +1,7 @@
 # Tasks — open-source task manager
 
 A clean, fast, self-hostable task manager built as a static single-page app.
-Live at **[sameer.cloud/task](https://sameer.cloud/task/)**.
+Production: **[sameer.cloud/task](https://sameer.cloud/task/)** · Public demo: **[samayhuf-star.github.io/sameer-cloud-taskmanager](https://samayhuf-star.github.io/sameer-cloud-taskmanager/)**
 
 ![Board view](docs/board.png)
 
