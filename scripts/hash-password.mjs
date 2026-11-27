@@ -1,0 +1,5 @@
+// Usage: npm run hash-password -- "your-password"
+import { createHash } from 'node:crypto'
+const pw = process.argv[2]
+if (!pw) { console.error('Usage: npm run hash-password -- "your-password"'); process.exit(1) }
+console.log(createHash('sha256').update('tasks-app:' + pw).digest('hex'))
