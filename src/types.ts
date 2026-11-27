@@ -7,6 +7,14 @@ export interface Label {
   color: string
 }
 
+/** Image or link attached to a task (e.g. a proof-of-completion screenshot). */
+export interface TaskAttachment {
+  id: string
+  url: string
+  caption: string
+  kind: 'image' | 'link'
+}
+
 export interface Task {
   id: string
   title: string
@@ -19,12 +27,24 @@ export interface Task {
   createdAt: string
   updatedAt: string
   completedAt: string | null
+  attachments: TaskAttachment[]
 }
 
 export interface AppData {
   version: 1
   tasks: Task[]
   labels: Label[]
+}
+
+export function normalizeData(d: AppData): AppData {
+  return {
+    version: 1,
+    labels: Array.isArray(d.labels) ? d.labels : [],
+    tasks: (Array.isArray(d.tasks) ? d.tasks : []).map((t) => ({
+      ...t,
+      attachments: Array.isArray(t.attachments) ? t.attachments : [],
+    })),
+  }
 }
 
 export const STATUSES: { id: Status; name: string; accent: string }[] = [

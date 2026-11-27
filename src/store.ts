@@ -1,46 +1,20 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { AppData, Label, Status, Task } from './types'
-import { todayISO, uid } from './utils'
+import { normalizeData } from './types'
+import { defaultBoard } from './seed'
+import { uid } from './utils'
 
 const KEY = 'tasks-app:data:v1'
-
-function seed(): AppData {
-  const now = new Date().toISOString()
-  const labels: Label[] = [
-    { id: uid(), name: 'Work', color: '#6366f1' },
-    { id: uid(), name: 'Personal', color: '#22c55e' },
-    { id: uid(), name: 'Bug', color: '#ef4444' },
-  ]
-  const addDays = (n: number) => {
-    const d = new Date(todayISO()); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10)
-  }
-  const mk = (title: string, status: Status, priority: Task['priority'], due: number | null, labelIdx: number[], order: number, description = ''): Task => ({
-    id: uid(), title, description, status, priority, dueDate: due === null ? null : addDays(due),
-    labelIds: labelIdx.map((i) => labels[i].id), order, createdAt: now, updatedAt: now,
-    completedAt: status === 'done' ? now : null,
-  })
-  return {
-    version: 1,
-    labels,
-    tasks: [
-      mk('Welcome! Drag me to another column', 'todo', 'medium', 0, [1], 0, 'Tasks are saved in this browser. Use Export in settings to back them up.'),
-      mk('Plan the week', 'todo', 'high', 1, [0], 1),
-      mk('Fix login redirect', 'in_progress', 'urgent', -1, [0, 2], 0, 'Overdue tasks are highlighted in red.'),
-      mk('Ideas for the weekend', 'backlog', 'low', null, [1], 0),
-      mk('Set up the task manager', 'done', 'medium', null, [0], 0),
-    ],
-  }
-}
 
 function load(): AppData {
   try {
     const raw = localStorage.getItem(KEY)
     if (raw) {
       const d = JSON.parse(raw) as AppData
-      if (d && Array.isArray(d.tasks) && Array.isArray(d.labels)) return d
+      if (d && Array.isArray(d.tasks) && Array.isArray(d.labels)) return normalizeData(d)
     }
   } catch { /* ignore corrupt data */ }
-  return seed()
+  return defaultBoard()
 }
 
 export function useStore() {
@@ -52,7 +26,7 @@ export function useStore() {
 
   // Keep multiple tabs in sync.
   useEffect(() => {
-    const onStorage = (e: StorageEvent) => { if (e.key === KEY && e.newValue) setData(JSON.parse(e.newValue)) }
+    const onStorage = (e: StorageEvent) => { if (e.key === KEY && e.newValue) setData(normalizeData(JSON.parse(e.newValue))) }
     window.addEventListener('storage', onStorage)
     return () => window.removeEventListener('storage', onStorage)
   }, [])
@@ -69,7 +43,7 @@ export function useStore() {
       const status = t.status ?? 'todo'
       const minOrder = Math.min(0, ...d.tasks.filter((x) => x.status === status).map((x) => x.order))
       const task: Task = {
-        id: uid(), description: '', priority: 'medium', dueDate: null, labelIds: [],
+        id: uid(), description: '', priority: 'medium', dueDate: null, labelIds: [], attachments: [],
         ...t, status, order: minOrder - 1, createdAt: now, updatedAt: now,
         completedAt: status === 'done' ? now : null,
       } as Task

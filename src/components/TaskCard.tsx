@@ -22,10 +22,20 @@ export default function TaskCard({ task, labels, onOpen, onToggleDone, dragging,
         <p className={cx('text-sm font-medium leading-snug break-words min-w-0', done && 'line-through text-slate-400')}>{task.title}</p>
       </div>
       {task.description && <p className="mt-1.5 ml-6 text-xs text-slate-500 dark:text-slate-400 line-clamp-2">{task.description}</p>}
+      {task.attachments?.some((a) => a.kind === 'image') && (
+        <div className="mt-2 ml-6 overflow-hidden rounded-md ring-1 ring-slate-200 dark:ring-slate-700">
+          <img src={task.attachments.find((a) => a.kind === 'image')!.url} alt="" className="h-20 w-full object-cover object-top bg-slate-100 dark:bg-slate-800" />
+        </div>
+      )}
       <div className="mt-2.5 ml-6 flex flex-wrap items-center gap-1.5">
         <PriorityBadge p={task.priority} />
         <DueBadge task={task} />
         {task.labelIds.map((id) => labels.find((l) => l.id === id)).filter(Boolean).map((l) => <LabelChip key={l!.id} label={l!} />)}
+        {(task.attachments?.length ?? 0) > 0 && (
+          <span className="text-[10px] uppercase tracking-wide text-slate-500 dark:text-slate-400">
+            {task.attachments.length} proof{task.attachments.length === 1 ? '' : 's'}
+          </span>
+        )}
       </div>
     </div>
   )

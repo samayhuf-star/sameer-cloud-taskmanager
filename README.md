@@ -110,6 +110,10 @@ A GitHub Pages workflow (`.github/workflows/pages.yml`) builds with `BASE_PATH=/
 On Vercel or Netlify set the build command to `npm run build`, output to `dist`, and `BASE_PATH=/`
 (or keep `/task/` and route that path).
 
+## Default board
+
+A first visit (empty `localStorage`) loads a baked-in board of Samay's Nov 26–27 2026 work: completed tasks in **Done** (with proof screenshots or a proof note) and pending work in **To do** / **In progress**. If this browser already has data, that board is left untouched — use **Settings → Import JSON** only if you want to replace it.
+
 ## Data & backup
 
 Tasks live in `localStorage` under `tasks-app:*`. Use **Settings → Export JSON** to back up,

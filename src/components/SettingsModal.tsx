@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { LABEL_COLORS, type AppData } from '../types'
+import { LABEL_COLORS, normalizeData, type AppData } from '../types'
 import type { Store } from '../store'
 import { Modal, inputCls, btnGhost, btnPrimary } from './ui'
 import { canChangePassword, hashPassword, setStoredHash } from './AuthGate'
@@ -25,7 +25,7 @@ export default function SettingsModal({ open, onClose, store }: { open: boolean;
       const d = JSON.parse(await file.text()) as AppData
       if (!Array.isArray(d.tasks) || !Array.isArray(d.labels)) throw new Error('bad file')
       if (confirm(`Replace your current board with ${d.tasks.length} tasks from this backup?`)) {
-        store.replaceAll({ version: 1, tasks: d.tasks, labels: d.labels }); setMsg('Backup imported.')
+        store.replaceAll(normalizeData({ version: 1, tasks: d.tasks, labels: d.labels })); setMsg('Backup imported.')
       }
     } catch { setMsg('That file is not a valid tasks backup.') }
   }
